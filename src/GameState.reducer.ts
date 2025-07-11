@@ -1,6 +1,9 @@
 import type { GameState, CardAction } from "./interfaces";
 
-export function cardsReducer(state: GameState, action: CardAction): GameState {
+export function gameStateReducer(
+  state: GameState,
+  action: CardAction,
+): GameState {
   const { type } = action;
   switch (type) {
     case "flipped": {
@@ -22,15 +25,33 @@ export function cardsReducer(state: GameState, action: CardAction): GameState {
       );
       const match: boolean = cardOne.value === cardTwo.value;
 
-      // empty flipped cards
-      // mark cards not flipped
       if (match) {
-        // increment matches
+        return {
+          ...state,
+          cards: state.cards.map((card) => {
+            if (card.id === cardOneId || card.id === cardTwoId) {
+              card.flipped = false;
+              card.matched = true;
+            }
+            return card;
+          }),
+          flippedCards: [],
+          matches: ++state.matches,
+        };
       } else {
-        // increment mistakes
+        return {
+          ...state,
+          cards: state.cards.map((card) => {
+            card.flipped = false;
+            return card;
+          }),
+          flippedCards: [],
+          mistakes: ++state.mistakes,
+        };
       }
     }
     case "reset": {
+
     }
     default: {
       throw new Error("Unknown action type in cardsReducer: " + type);

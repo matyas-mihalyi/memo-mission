@@ -1,42 +1,243 @@
+/* flipping card animation based on https://www.w3schools.com/howto/howto_css_flip_card.asp */
+@import url("https://fonts.googleapis.com/css2?family=Open+Sans:ital,wght@0,400;0,600;0,700;1,400;1,600;1,700&display=swap");
+
+:root {
+  --default-font: "Open Sans", sans-serif;
+  font-family: var(--default-font);
+}
+
+* {
+  padding: 0;
+  margin: 0;
+  box-sizing: border-box;
+}
+html,
+body,
+#app,
+#app > div {
+  height: 100%;
+}
+
+body {
+  height: 100%;
+  background-image: radial-gradient(#84c1f8, #008fa8);
+  background-size: cover;
+  background-repeat: no-repeat;
+}
+
 #root {
-  max-width: 1280px;
+  font-family: var(--default-font);
+  background-repeat: no-repeat;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 16px;
+  padding: 1em 20px;
+  position: relative;
+  /* temporary fix for desktop */
+  max-width: 600px;
   margin: 0 auto;
-  padding: 2rem;
+}
+
+.board {
+  grid-column: 1/5;
+  display: flex;
+  flex-wrap: wrap;
+}
+
+.card-wrapper {
+  width: calc(25% - 8px);
+  height: 0;
+  padding-bottom: calc(25% - 8px);
+  margin: 4px;
+  background-color: transparent;
+  user-select: none;
+  /* for 3d effect */
+  perspective: 1000px;
+}
+
+@media screen and (min-width: 400px) {
+  .card-wrapper {
+    width: calc(20% - 8px);
+    padding-bottom: calc(20% - 8px);
+  }
+}
+
+.card-inner {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  text-align: center;
+  transition: transform 0.6s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+  transform-style: preserve-3d;
+  /* above code is from w3schools  */
+  cursor: pointer;
+  border-radius: 0.25em;
+}
+
+.flipped {
+  transform: rotateY(180deg);
+}
+
+.card-wrapper .card-inner .card-front {
+  transform: rotateY(180deg);
+  background-color: #fff;
+  padding: 0.25em;
+  box-shadow: inset 0 0 0 0.25em #ffc837;
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  border-radius: 0.25em;
+  /**/
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+.card-wrapper .card-inner .card-front span {
+  object-fit: cover;
+  width: 100%;
+  font-size: clamp(18px, 48px, 100%);
+}
+
+.card-wrapper .card-inner .card-back {
+  background-color: #ffc837;
+  border-radius: 0.25em;
+}
+
+.card-front,
+.card-back {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  -webkit-backface-visibility: hidden; /* Safari */
+  backface-visibility: hidden;
+}
+
+/****************************************/
+/****************************************/
+/***********     NAV     ****************/
+/****************************************/
+/****************************************/
+
+nav {
+  position: fixed;
+  position: -webkit-fixed;
+  bottom: 0;
+  left: 50%;
+  transform: translateX(-50%);
+
+  height: 3em;
+  width: 100%;
+  background-color: #ffc837;
+
+  display: flex;
+  justify-content: space-around;
+  align-items: center;
+
+  max-width: 600px;
+}
+
+nav .reset,
+.menu {
+  cursor: pointer;
+  user-select: none;
+}
+
+nav .score {
+  display: flex;
+  /* flex-direction: column; */
+  align-items: center;
+  justify-content: space-between;
+  user-select: none;
+}
+nav .score .label {
+  font-size: 0.75rem;
+  margin-right: 0.25em;
+}
+nav .score .moves {
+  font-size: 1.25rem;
+  font-weight: 600;
+}
+
+nav .reset span {
+  transition: 0.25s ease-in-out;
+}
+
+/****************************************/
+/****************************************/
+/***********    MODAL    ****************/
+/****************************************/
+/****************************************/
+
+.modal-wrapper {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.7);
+  z-index: 500;
+  padding: 0 28px;
+
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.container {
+  width: 100%;
+  max-width: 400px;
+  background-color: #ffc837;
+  padding: 2em 1em;
+  border-radius: 0.125em;
+  display: flex;
+  flex-direction: column;
+  gap: 1em;
+  align-items: center;
+  flex-wrap: wrap;
+}
+
+.container h3 {
+  width: 100%;
   text-align: center;
 }
-
-.logo {
-  height: 6em;
-  padding: 1.5em;
-  will-change: filter;
-  transition: filter 300ms;
+.container .number-of-cards {
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
-.logo:hover {
-  filter: drop-shadow(0 0 2em #646cffaa);
+.container .number-of-cards span {
+  font-size: 1.25rem;
+  font-weight: 700;
+  cursor: pointer;
 }
-.logo.react:hover {
-  filter: drop-shadow(0 0 2em #61dafbaa);
-}
-
-@keyframes logo-spin {
-  from {
-    transform: rotate(0deg);
-  }
-  to {
-    transform: rotate(360deg);
-  }
+.container .number-of-cards .number-of-mons {
+  margin: 0 1em;
 }
 
-@media (prefers-reduced-motion: no-preference) {
-  a:nth-of-type(2) .logo {
-    animation: logo-spin infinite 20s linear;
-  }
+.container select {
+  padding: 0.25rem 0.5rem;
+  font-size: 1rem;
+  border: 0.125rem solid #000;
+  border-radius: 2px;
+}
+/* HIGHSCORE */
+
+.message-wrapper {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
 }
 
-.card {
-  padding: 2em;
+.message-wrapper strong {
+  font-size: 1.5rem;
 }
 
-.read-the-docs {
-  color: #888;
+.container button {
+  background: transparent;
+  border: none;
+  font-weight: 700;
+  /* box-shadow: inset 0 0 0 0.125rem #000; */
+  background-color: #84c1f8;
+  border-radius: 0.25rem;
+  padding: 0.75em 1.5em;
+  font-size: 1rem;
 }

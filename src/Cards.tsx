@@ -17,7 +17,7 @@ export function Cards() {
     ) {
       clearTimeout(flipBackUnmatchedTimeoutRef.current);
       flipBackUnmatchedTimeoutRef.current = null;
-      dispatch({ type: "check_match" });
+      dispatch({ type: "match" });
     }
     dispatch({ type: "flipped", id });
   }
@@ -25,7 +25,7 @@ export function Cards() {
   useEffect(() => {
     if (gameState.flippedCards.length === 2) {
       flipBackUnmatchedTimeoutRef.current = setTimeout(() => {
-        dispatch({ type: "check_match" });
+        dispatch({ type: "match" });
         flipBackUnmatchedTimeoutRef.current = null;
       }, 2000);
     }
@@ -44,7 +44,9 @@ export function Cards() {
               card.flipped || card.matched ? "card-inner flipped" : "card-inner"
             }
           >
-            <div className="card-front">{card.value}</div>
+            <div className="card-front">
+              <span>{card.value}</span>
+            </div>
             <div className="card-back" />
           </div>
         </div>

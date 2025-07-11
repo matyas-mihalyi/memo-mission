@@ -5,7 +5,7 @@ import {
   GameStateContext,
   GameStateDispatchContext,
 } from "./GameState.context";
-import { cardsReducer } from "./GameState.reducer";
+import { gameStateReducer } from "./GameState.reducer";
 import type { GameState, CardProps } from "./interfaces";
 
 function shuffle<T>(array: Array<T>): void {
@@ -17,21 +17,41 @@ function shuffle<T>(array: Array<T>): void {
   }
 }
 
+function getCardValues(count: number): Array<string> {
+  const values = new Set<string>();
+
+  for (let i = 0; i < count; i++) {
+    // Emoji range: 0x1F300 to 0x1FAFF
+    const randomCodePoint =
+      Math.floor(Math.random() * (0x1faff - 0x1f300 + 1)) + 0x1f300;
+    const emoji = String.fromCodePoint(randomCodePoint);
+    if (values.has(emoji)) {
+      --i;
+    } else {
+      values.add(emoji);
+    }
+  }
+
+  return [...values.values()];
+}
+
 function initCards(numberOfPairs: number): Array<CardProps> {
-  const cards = [];
-  for (let i = 0; i < numberOfPairs; i++) {
+  const cardValues = getCardValues(numberOfPairs);
+  const cards = cardValues.reduce((acc, currentCardValue, i) => {
     const cardOne: CardProps = {
-      id: i + 1,
+      id: `${i}-${Math.random().toString(36).slice(2, 9)}`,
       flipped: false,
       matched: false,
-      value: String(i),
+      value: currentCardValue,
     };
     const cardTwo = {
       ...cardOne,
-      id: cardOne.id + 1,
+      id: `${i}-${Math.random().toString(36).slice(2, 9)}`,
     };
-    cards.push(...[cardOne, cardTwo]);
-  }
+    acc.push(...[cardOne, cardTwo]);
+    return acc;
+  }, [] as Array<CardProps>);
+
   shuffle(cards);
   return cards;
 }
@@ -43,7 +63,7 @@ function App() {
     matches: 0,
     mistakes: 0,
   };
-  const [gameState, dispatch] = useReducer(cardsReducer, initialGameState);
+  const [gameState, dispatch] = useReducer(gameStateReducer, initialGameState);
   return (
     <>
       <GameStateContext.Provider value={gameState}>
